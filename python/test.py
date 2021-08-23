@@ -28,10 +28,6 @@ import binascii
 import unittest
 import lisk32
 
-def segwit_scriptpubkey(witver, witprog):
-    """Construct a Segwit scriptPubKey for a given witness program."""
-    return bytes([witver + 0x50 if witver else 0, len(witprog)] + witprog)
-
 VALID_ADDRESS = [
     ["lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu", "c247a42e09e6aafd818821f75b2f5b0de47c8235"],
     ["lskxwnb4ubt93gz49w3of855yy9uzntddyndahm6s", "0dce64c0d36a3e04b6e8679eb5c62d800f3d6a27"],
