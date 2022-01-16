@@ -42,21 +42,15 @@ def bech32_polymod(values):
             chk ^= generator[i] if ((top >> i) & 1) else 0
     return chk
 
-
-def bech32_hrp_expand(hrp):
-    """Expand the HRP into values for checksum computation."""
-    return [ord(x) >> 5 for x in hrp] + [0] + [ord(x) & 31 for x in hrp]
-
-
 def bech32_verify_checksum(data):
-    """Verify a checksum given HRP and converted data characters."""
+    """Verify a checksum given converted data characters."""
     const = bech32_polymod(data)
     if const == 1:
         return Encoding.BECH32
     return None
 
 def bech32_create_checksum(data):
-    """Compute the checksum values given HRP and data."""
+    """Compute the checksum values of given data."""
     const = 1
     polymod = bech32_polymod(data + [0, 0, 0, 0, 0, 0]) ^ const
     return [(polymod >> 5 * (5 - i)) & 31 for i in range(6)]
@@ -83,7 +77,7 @@ def bech32_decode(bech):
         return (None, None, None)
     return (hrp, data[:-6], spec)
 
-def convertbits(data, frombits, tobits, pad=True):
+def convertbits(data, frombits, tobits, pad=False):
     """General power-of-2 base conversion."""
     acc = 0
     bits = 0
@@ -112,18 +106,16 @@ def decode(addr):
     if hrpgot != HRP:
         return None
     decoded = convertbits(data, 5, 8, False)
-    if decoded is None or len(decoded) < 2 or len(decoded) > 40:
-        return None
-    if len(decoded) != 20:
+    if decoded is None or len(decoded) != 20:
         return None
     if spec != Encoding.BECH32:
         return None
     return decoded
 
 
-def encode(witprog):
+def encode(addr):
     """Encode a Lisk32 address."""
-    ret = bech32_encode(HRP, convertbits(witprog, 8, 5))
+    ret = bech32_encode(HRP, convertbits(addr, 8, 5))
     if decode(ret) == None:
         return None
     return ret
